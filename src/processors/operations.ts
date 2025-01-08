@@ -223,11 +223,11 @@ export class Operations {
         }
 
         if (child.stderr) {
-            this._logger.warn(`[Run Err] ` + child.stderr.toString());
+            this._logger.warn(`[Run Err] ` + child.stderr.toString().trim());
         }
 
         if (child.stdout != null) {
-            this._logger.info(`[Run Out] ` + child.stdout.toString());
+            this._logger.info(`[Run Out] ` + child.stdout.toString().trim());
         }
 
         if (child.status !== 0) {
