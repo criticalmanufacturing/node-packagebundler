@@ -29,12 +29,14 @@ export class PackagePacker {
         const addons: string = options.a as string || options.addons as string;
         const version: string = options.v as string || options.version as string || "";
         const debug: boolean = options.d as boolean || options.debug as boolean || false;
-        // let mappedAddons: string | undefined = undefined;
 
         this._logger = container.get<Log>(TYPES.Logger);
         this._operations = container.get<Operations>(TYPES.Operations);
 
-        // const _logger: Log = container.get<Log>(TYPES.Logger);
+        const packageFile: string = path.join(path.dirname(__filename), "..", "package.json");
+        const packageContent = io.readJSONSync(packageFile);
+        this._logger.notice(`** Using Package Bundler version '${packageContent.version}' **`);
+        this._logger.notice(``);
 
         this._logger.debug(`Using the following settings:`);
         this._logger.debug(`   Source        : ${source}`);

@@ -6,6 +6,9 @@
         "CMF",
         "IoT"
     ],
+    "bin": {
+        "packageBundler": "./src/index.js"
+    },
     "homepage": "https://github.com/criticalmanufacturing/node-packagebundler",
     "scripts": {
         "build": "tsc",
