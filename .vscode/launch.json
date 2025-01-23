@@ -5,17 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            // Example options for -a:
+            // https://dev.criticalmanufacturing.io/repository/http/ConnectIoT
+            // ../../dependencies/IoTNodeAddons
             "type": "node",
             "request": "launch",
             "name": "Start PackagePacker",
-            "program": "${workspaceRoot}/node_modules/yo/lib/cli.js",
+            "program": "${workspaceRoot}/src/index.js",
             "args": [
-                "${workspaceRoot}/generators/packagePacker/index.js",
-                "-a=C:/cmf/repos/Product/IoMT/dependencies/IoTNodeAddons",
+                "-a=https://dev.criticalmanufacturing.io/repository/http/ConnectIoT",
                 "-d",
                 "-o=."
             ],
-            "cwd": "C:/cmf/repos/MonoRepo/Product/Platform/ConnectIoT/src/connect-iot-business-scenarios-general",
+            "cwd": "C:/cmf/Product/111x/Product/Platform/ConnectIoT/src/driver-oib",
             "outFiles": [],
             "outputCapture": "std"
         },

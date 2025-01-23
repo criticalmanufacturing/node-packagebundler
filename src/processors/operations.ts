@@ -236,4 +236,46 @@ export class Operations {
 
         return (true);
     }
+
+    /**
+     * Utility function to convert ReadableStream<Uint8Array> to Buffer
+     * @param readableStream ReadableStream to convert
+     */
+    public async readStreamToBuffer(
+        readableStream: ReadableStream<Uint8Array>
+    ): Promise<Buffer> {
+        const reader = readableStream.getReader();
+        const chunks: Uint8Array[] = [];
+        let done = false;
+
+        while (!done) {
+        const { value, done: isDone } = await reader.read();
+        if (value) {
+            chunks.push(value);
+        }
+        done = isDone;
+        }
+
+        // Concatenate all chunks into a single Buffer
+        const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+        const buffer = Buffer.concat(chunks, totalLength);
+        return buffer;
+    }
+
+    /**
+     * Utility function to convert ReadableStream<Uint8Array> to Buffer
+     * @param urlToValidate String representing the url to validate
+     */
+    public isValidUrl(urlToValidate: string): boolean {
+        let url;
+        try {
+            url = new URL(urlToValidate);
+            if (url !== null && (url.protocol === "http:" || url.protocol === "https:")) {
+                return true;
+            }
+        } catch (_) {
+            return false;
+        }
+        return false;
+    }
 }
