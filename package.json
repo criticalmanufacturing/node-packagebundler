@@ -51,7 +51,9 @@
         "fs-extra": "11.2.0",
         "inversify": "6.2.1",
         "reflect-metadata": "0.2.2",
-        "yargs": "17.7.2"
+        "yargs": "17.7.2",
+        "unzipper": "0.12.3",
+        "@types/unzipper": "0.10.10"
     },
     "license": "GPL-3.0",
     "author": "Critical Manufacturing"
