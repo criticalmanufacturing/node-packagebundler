@@ -261,4 +261,21 @@ export class Operations {
         const buffer = Buffer.concat(chunks, totalLength);
         return buffer;
     }
+
+    /**
+     * Utility function to convert ReadableStream<Uint8Array> to Buffer
+     * @param urlToValidate String representing the url to validate
+     */
+    public isValidUrl(urlToValidate: string): boolean {
+        let url;
+        try {
+            url = new URL(urlToValidate);
+            if (url !== null && (url.protocol === "http:" || url.protocol === "https:")) {
+                return true;
+            }
+        } catch (_) {
+            return false;
+        }
+        return false;
+    }
 }

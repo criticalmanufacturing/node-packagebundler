@@ -11,8 +11,8 @@
             "type": "node",
             "request": "launch",
             "name": "Start PackagePacker",
+            "program": "${workspaceRoot}/src/index.js",
             "args": [
-                "C:/cmf/node-packagebundler/callPackagePack.js",
                 "-a=https://dev.criticalmanufacturing.io/repository/http/ConnectIoT",
                 "-d",
                 "-o=."

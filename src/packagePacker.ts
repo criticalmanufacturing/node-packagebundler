@@ -64,55 +64,7 @@ export class PackagePacker {
         const configuration: Configuration = JSON.parse(io.readFileSync(configurationFile, "utf8"));
 
         if (addons != null && addons !== "") {
-            let url;
-            // Check if the provided addon location is an valid URL
-            try {
-                url = new URL(addons);
-            } catch (_) {
-                url = null;
-            }
-            if (url !== null && (url.protocol === "http:" || url.protocol === "https:")) {
-                const localAddons: string = path.join(source, "__ADDONS__");
-                let success: number = 0;
-
-                if (configuration.addons != null && configuration.addons.length > 0) {
-                    this._operations.deleteDirectory(localAddons);
-                    this._operations.createDirectory(localAddons);
-                }
-
-                for await (const addon of configuration.addons || []) {
-                    const packageName: string = `${addon.name}-${addon.version}.zip`;
-                    const destination: string = path.join(localAddons, `${addon.name}/${addon.version}/`);
-                    const downloadUrl = `${url.href}/${addon.name}/${packageName}`;
-                    this._logger.debug(`Downloading package: ${addon.name}-${addon.version} to ${destination} from ${downloadUrl}`);
-
-                    // Download the package
-                    const response = await fetch(downloadUrl, {
-                        method: "GET",
-                    });
-
-                    if (!response.ok || response?.body === null) {
-                        this._logger.error(`Failed to download package: ${response.statusText}`);
-                        process.exit(1);
-                    }
-
-                    // Convert the ReadableStream into a Stream
-                    const nodeStream = await this._operations.readStreamToBuffer(response.body);
-
-                    // Unzip to the destination folder
-                    await unzipper.Open.buffer(nodeStream)
-                        .then(d => d.extract({path: destination, concurrency: 5}));
-                    success += 1;
-                };
-
-                if(success === configuration.addons?.length) {
-                    addons = localAddons;
-                } else {
-                    this._operations.deleteDirectory(localAddons);
-                    this._logger.error(`Failed to download all the required addons from the nexus.`);
-                    process.exit(1);
-                }
-            }
+            addons = await this.processAddOns(addons, source, configuration);
             if (!io.existsSync(addons)) {
                 this._logger.error(`Addons location '${addons}' doesn't exist!`);
                 process.exit(1);
@@ -388,5 +340,59 @@ export class PackagePacker {
      */
     private sleep(ms: number): Promise<any> {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * Treat addons entry. To validate, download, unzip and reajust addons location.
+     * @param addons Addons location
+     * @param source Where is the source location
+     * @param configuration Configurations parsed from the packConfig
+     */
+    private async processAddOns(addons: string, source: string, configuration: Configuration): Promise<string> {
+        if (this._operations.isValidUrl(addons)) {
+            const url = new URL(addons);
+            const localAddons: string = path.join(source, "__ADDONS__");
+            let success: number = 0;
+
+            if (configuration.addons != null && configuration.addons.length > 0) {
+                this._operations.deleteDirectory(localAddons);
+                this._operations.createDirectory(localAddons);
+            }
+
+            for(const addon of configuration.addons || []) {
+                const packageName: string = `${addon.name}-${addon.version}.zip`;
+                const destination: string = path.join(localAddons, `${addon.name}/${addon.version}/`);
+                const downloadUrl = `${url.href}/${addon.name}/${packageName}`;
+                this._logger.debug(`Downloading package: ${addon.name}-${addon.version} to ${destination} from ${downloadUrl}`);
+
+                // Download the package
+                const response = await fetch(downloadUrl, {
+                    method: "GET",
+                });
+
+                if (!response.ok || response?.body === null) {
+                    this._logger.error(`Failed to download package: ${response.statusText}`);
+                    process.exit(1);
+                }
+
+                // Convert the ReadableStream into a Stream
+                const nodeStream = await this._operations.readStreamToBuffer(response.body);
+
+                // Unzip to the destination folder
+                await unzipper.Open.buffer(nodeStream)
+                    .then(d => d.extract({path: destination, concurrency: 5}));
+                success += 1;
+            };
+
+            if(success === configuration.addons?.length) {
+                addons = localAddons;
+                this._logger.debug(`Changed the default addon location to: ${addons}`);
+            } else {
+                this._operations.deleteDirectory(localAddons);
+                this._logger.error(`Failed to download all the required addons from the nexus.`);
+                process.exit(1);
+            }
+        }
+        return addons;
     }
 }
