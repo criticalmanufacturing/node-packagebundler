@@ -63,7 +63,8 @@ export class PackagePacker {
 
         const configuration: Configuration = JSON.parse(io.readFileSync(configurationFile, "utf8"));
 
-        if (addons != null && addons !== "") {
+        // Only process addons if there are addons to process and if there is an arg for addons
+        if (configuration.addons != null && addons != null && addons !== "") {
             addons = await this.processAddOns(addons, source, configuration);
             if (!io.existsSync(addons)) {
                 this._logger.error(`Addons location '${addons}' doesn't exist!`);
@@ -359,7 +360,7 @@ export class PackagePacker {
                 this._operations.createDirectory(localAddons);
             }
 
-            for(const addon of configuration.addons || []) {
+            for (const addon of configuration.addons || []) {
                 const packageName: string = `${addon.name}-${addon.version}.zip`;
                 const destination: string = path.join(localAddons, `${addon.name}/${addon.version}/`);
                 const downloadUrl = `${url.href}/${addon.name}/${packageName}`;
@@ -380,11 +381,11 @@ export class PackagePacker {
 
                 // Unzip to the destination folder
                 await unzipper.Open.buffer(nodeStream)
-                    .then(d => d.extract({path: destination, concurrency: 5}));
+                    .then(d => d.extract({ path: destination, concurrency: 5 }));
                 success += 1;
             };
 
-            if(success === configuration.addons?.length) {
+            if (success === configuration.addons?.length) {
                 addons = localAddons;
                 this._logger.debug(`Changed the default addon location to: ${addons}`);
             } else {
