@@ -25,7 +25,7 @@ export class PackagePacker {
 
         const source: string = options.i as string || options.input as string || process.cwd();
         const destination: string = options.o as string || options.output as string || "";
-        let temp: string = options.t as string || options.temp as string || path.join(source, "__TEMP__");
+        const temp: string = options.t as string || options.temp as string || path.join(source, "__TEMP__");
         const configurationFile: string = options.c as string || options.config as string || path.join(source, "packConfig.json");
         let addons: string = options.a as string || options.addons as string;
         const version: string = options.v as string || options.version as string || "";
@@ -76,17 +76,17 @@ export class PackagePacker {
         paths.setup(source, destination, temp, addons);
 
         // Prepare temp Directory
+        this._operations.deleteDirectory(temp);
+        this._operations.createDirectory(temp);
         if (configuration.type === ComponentType.TasksPackage) {
-            temp = io.readJSONSync(path.join(source, "ng-package.json")).dest;
+            const dist = io.readJSONSync(path.join(source, "ng-package.json")).dest;
 
-            if (!io.existsSync(temp)) {
-                this._logger.error(`'${temp}' doesn't exist! Did you forget to run 'ng build'?`);
+            if (!io.existsSync(dist)) {
+                console.error("\x1b[31m", `'${dist}' doesn't exist! Did you forget to run 'ng build'?`, "\x1b[0m");
                 process.exit(1);
             }
-            this._logger.warn(`Temporary directory changed to '${temp}'`);
-        } else {
-            this._operations.deleteDirectory(temp);
-            this._operations.createDirectory(temp);
+
+            this._operations.copyDirectory(dist, temp);
         }
 
         const main: string = io.readJSONSync(path.join(source, "package.json"))?.main;
