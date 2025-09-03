@@ -324,7 +324,7 @@ export class Operations {
      * @param dirPath The path to apply the filter to
      */
     private filterFiles(filter: string, dirPath: string): string[] {
-        const regex = new RegExp("^" + filter + "$");
+        const regex = new RegExp(filter);
         return io
             .readdirSync(dirPath)
             .filter(file => {

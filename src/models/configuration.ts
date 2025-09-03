@@ -24,11 +24,11 @@ export enum ActionType {
     CopyDirectory = "CopyDirectory",
     /** Copy single file */
     CopyFile = "CopyFile",
-    /** Copy single files */
+    /** Copy files */
     CopyFiles = "CopyFiles",
     /** Move single file */
     MoveFile = "MoveFile",
-    /** Move single files */
+    /** Move files */
     MoveFiles = "MoveFiles",
     /** Rename single file */
     RenameFile = "RenameFile",
