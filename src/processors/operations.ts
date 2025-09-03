@@ -35,12 +35,12 @@ export class Operations {
 
     /**
     * Copy files based on a regex from one place to another
-    * @param regex Regular expression
+    * @param filter Regular expression
     * @param source Directory path where the file is located
     * @param destination Directory path where the file is to be copied
     */
-    public copyFiles(regexString: string, source: string, destination: string, isOptional: boolean = false): void {
-        const result = this.filterFiles(regexString, source);
+    public copyFiles(filter: string, source: string, destination: string, isOptional: boolean = false): void {
+        const result = this.filterFiles(filter, source);
         result.forEach(fileName => {
             this.copyFile(fileName, source, destination, isOptional);
         });
@@ -68,12 +68,12 @@ export class Operations {
 
     /**
      * Move files based on a regex one location into another
-     * @param regex Regular expression
+     * @param filter Regular expression
      * @param source Directory path where the file is located
      * @param destination Directory path where the file is to be moved
      */
-    public moveFiles(regexString: string, source: string, destination: string): void {
-        const result = this.filterFiles(regexString, source);
+    public moveFiles(filter: string, source: string, destination: string): void {
+        const result = this.filterFiles(filter, source);
         result.forEach(fileName => {
             this.moveFile(fileName, source, destination);
         });
@@ -108,11 +108,11 @@ export class Operations {
 
     /**
      * Delete files based on a regular expression
-     * @param regex Regular expression
+     * @param filter Regular expression
      * @param filePath Path of the file
      */
-    public deleteFiles(regexString: string, filePath: string): void {
-        const result = this.filterFiles(regexString, filePath);
+    public deleteFiles(filter: string, filePath: string): void {
+        const result = this.filterFiles(filter, filePath);
         result.forEach(fileName => {
             const fullPath = path.join(filePath, fileName);
             this.deleteFile(fullPath);
@@ -320,11 +320,11 @@ export class Operations {
 
     /**
      * Filter files based on a regex
-     * @param regexString Regular expression to use as filter
+     * @param filter Regular expression to use as filter
      * @param dirPath The path to apply the filter to
      */
-    private filterFiles(regexString: string, dirPath: string): string[] {
-        const regex = new RegExp("^" + regexString + "$");
+    private filterFiles(filter: string, dirPath: string): string[] {
+        const regex = new RegExp("^" + filter + "$");
         return io
             .readdirSync(dirPath)
             .filter(file => {
