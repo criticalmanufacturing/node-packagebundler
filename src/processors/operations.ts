@@ -34,6 +34,19 @@ export class Operations {
     }
 
     /**
+    * Copy files based on a regex from one place to another
+    * @param regex Regular expression
+    * @param source Directory path where the file is located
+    * @param destination Directory path where the file is to be copied
+    */
+    public copyFiles(regexString: string, source: string, destination: string, isOptional: boolean = false): void {
+        const result = this.filterFiles(regexString, source);
+        result.forEach(fileName => {
+            this.copyFile(fileName, source, destination, isOptional);
+        });
+    }
+
+    /**
      * Move a file from one location into another
      * @param file File to move
      * @param source Directory path where the file is located
@@ -51,6 +64,19 @@ export class Operations {
         } else {
             throw new Error(`[Move FAIL] File '${sourcePath}' doesn't exist!!!`);
         }
+    }
+
+    /**
+     * Move files based on a regex one location into another
+     * @param regex Regular expression
+     * @param source Directory path where the file is located
+     * @param destination Directory path where the file is to be moved
+     */
+    public moveFiles(regexString: string, source: string, destination: string): void {
+        const result = this.filterFiles(regexString, source);
+        result.forEach(fileName => {
+            this.moveFile(fileName, source, destination);
+        });
     }
 
     /**
@@ -78,6 +104,18 @@ export class Operations {
         } else {
             this._logger.warn(`[Delete Ignored] '${filePath}'`);
         }
+    }
+
+    /**
+     * Delete files based on a regular expression
+     * @param regex Regular expression
+     * @param filePath Path of the file
+     */
+    public deleteFiles(regexString: string, filePath: string): void {
+        const result = this.filterFiles(regexString, filePath);
+        result.forEach(fileName => {
+            this.deleteFile(filePath + fileName);
+        });
     }
 
     public createFile(destination: string, contents: Buffer): void {
@@ -277,5 +315,20 @@ export class Operations {
             return false;
         }
         return false;
+    }
+
+    /**
+     * Filter files based on a regex
+     * @param regexString Regular expression to use as filter
+     * @param dirPath The path to apply the filter to
+     */
+    private filterFiles(regexString: string, dirPath: string): string[] {
+        const regex = new RegExp("^" + regexString + "$");
+        return io
+            .readdirSync(dirPath)
+            .filter(file => {
+                const fullPath = path.join(dirPath, file);
+                return io.statSync(fullPath).isFile() && regex.test(file);
+            });
     }
 }
