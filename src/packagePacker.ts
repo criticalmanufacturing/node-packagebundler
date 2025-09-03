@@ -36,7 +36,7 @@ export class PackagePacker {
 
         const packageFile: string = path.join(path.dirname(__filename), "..", "package.json");
         const packageContent = io.readJSONSync(packageFile);
-        this._logger.notice(`** Using LOCAL Package Bundler version '${packageContent.version}' **`);
+        this._logger.notice(`** Using Package Bundler version '${packageContent.version}' **`);
         this._logger.notice(``);
 
         this._logger.debug(`Using the following settings:`);
