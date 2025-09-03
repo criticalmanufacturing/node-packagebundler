@@ -114,7 +114,8 @@ export class Operations {
     public deleteFiles(regexString: string, filePath: string): void {
         const result = this.filterFiles(regexString, filePath);
         result.forEach(fileName => {
-            this.deleteFile(filePath + fileName);
+            const fullPath = path.join(filePath, fileName);
+            this.deleteFile(fullPath);
         });
     }
 
