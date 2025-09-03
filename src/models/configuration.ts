@@ -16,14 +16,20 @@ export enum ComponentType {
 export enum ActionType {
     /** Delete file */
     DeleteFile = "DeleteFile",
+    /** Delete files */
+    DeleteFiles = "DeleteFiles",
     /** Delete directory */
     DeleteDirectory = "DeleteDirectory",
     /** Copy entire directory contents */
     CopyDirectory = "CopyDirectory",
     /** Copy single file */
     CopyFile = "CopyFile",
+    /** Copy files */
+    CopyFiles = "CopyFiles",
     /** Move single file */
     MoveFile = "MoveFile",
+    /** Move files */
+    MoveFiles = "MoveFiles",
     /** Rename single file */
     RenameFile = "RenameFile",
     /** Replace text with another one */
@@ -64,6 +70,8 @@ export interface Action {
     replace?: string;
     /** File to work */
     file?: string;
+    /** Regular expression used to filter */
+    filter?: string;
     /** Search is regular expression */
     isRegularExpression?: boolean;
 }

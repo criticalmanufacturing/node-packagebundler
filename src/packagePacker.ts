@@ -225,10 +225,13 @@ export class PackagePacker {
 
             switch (action.type) {
                 case ActionType.DeleteFile: this._operations.deleteFile(actionSource); break;
+                case ActionType.DeleteFiles: this._operations.deleteFiles(action.filter || "", actionSource); break;
                 case ActionType.DeleteDirectory: this._operations.deleteDirectory(actionSource); break;
                 case ActionType.CopyDirectory: this._operations.copyDirectory(actionSource, actionDestination); break;
                 case ActionType.CopyFile: this._operations.copyFile(action.file || "", actionSource, actionDestination); break;
+                case ActionType.CopyFiles: this._operations.copyFiles(action.filter || "", actionSource, actionDestination); break;
                 case ActionType.MoveFile: this._operations.moveFile(action.file || "", actionSource, actionDestination); break;
+                case ActionType.MoveFiles: this._operations.moveFiles(action.filter || "", actionSource, actionDestination); break;
                 case ActionType.RenameFile: this._operations.renameFile(actionSource, actionDestination); break;
                 case ActionType.ReplaceText: this._operations.replaceTextInFile(actionSource, action.search || "", action.replace || "", action.isRegularExpression || false); break;
             }
