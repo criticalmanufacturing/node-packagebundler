@@ -1,6 +1,6 @@
 {
     "name": "@criticalmanufacturing/node-package-bundler",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "Connect IoT Package Bundler",
     "keywords": [
         "CMF",
