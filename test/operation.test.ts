@@ -153,7 +153,7 @@ describe("Operations", () => {
 
             expect(unlinkSyncStub.called).to.be.false;
             expect(logStub.warn.calledWith(
-                `[Delete Ignored] No files found with '${filter}' for '${path}'`
+                `[Delete IGNORED] No files found with '${filter}' for '${path}'`
             )).to.be.true;
         });
     });
@@ -204,7 +204,7 @@ describe("Operations", () => {
 
             expect(copySyncStub.called).to.be.false;
             expect(unlinkSyncStub.called).to.be.false;
-            expect(logStub.warn.calledWith(`[Move Ignored] No files found with '${filter}' for '${path}'`)).to.be.true;
+            expect(logStub.warn.calledWith(`[Move IGNORED] No files found with '${filter}' for '${path}'`)).to.be.true;
         });
     });
 
@@ -250,7 +250,7 @@ describe("Operations", () => {
             operations.copyFiles(filter, testDir, destDir);
 
             expect(copySyncStub.called).to.be.false;
-            expect(logStub.warn.calledWith(`[Copy Ignored] No files found with '${filter}' for '${path}'`)).to.be.true;
+            expect(logStub.warn.calledWith(`[Copy IGNORED] No files found with '${filter}' for '${path}'`)).to.be.true;
         });
     });
 });
