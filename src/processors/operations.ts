@@ -26,7 +26,7 @@ export class Operations {
             this._logger.info(`[Copy] '${file}' to '${destination}'`);
         } else {
             if (isOptional) {
-                this._logger.warn(`[Copy Ignored] File '${sourcePath}' doesn't exist`);
+                this._logger.warn(`[Copy IGNORED] File '${sourcePath}' doesn't exist`);
             } else {
                 throw new Error(`[Copy FAIL] File '${sourcePath}' doesn't exist!!!`);
             }
@@ -41,9 +41,13 @@ export class Operations {
     */
     public copyFiles(filter: string, source: string, destination: string, isOptional: boolean = false): void {
         const result = this.filterFiles(filter, source);
-        result.forEach(fileName => {
-            this.copyFile(fileName, source, destination, isOptional);
-        });
+        if (result.length === 0) {
+            this._logger.warn(`[Copy IGNORED] No files found with '${filter}' for '${path}'`);
+        } else {
+            result.forEach(fileName => {
+                this.copyFile(fileName, source, destination, isOptional);
+            });
+        }
     }
 
     /**
@@ -74,9 +78,13 @@ export class Operations {
      */
     public moveFiles(filter: string, source: string, destination: string): void {
         const result = this.filterFiles(filter, source);
-        result.forEach(fileName => {
-            this.moveFile(fileName, source, destination);
-        });
+        if (result.length === 0) {
+            this._logger.warn(`[Move IGNORED] No files found with '${filter}' for '${path}'`);
+        } else {
+            result.forEach(fileName => {
+                this.moveFile(fileName, source, destination);
+            });
+        }
     }
 
     /**
@@ -102,7 +110,7 @@ export class Operations {
             io.unlinkSync(filePath);
             this._logger.info(`[Deleted] '${filePath}'`);
         } else {
-            this._logger.warn(`[Delete Ignored] '${filePath}'`);
+            this._logger.warn(`[Delete IGNORED] '${filePath}'`);
         }
     }
 
@@ -113,10 +121,14 @@ export class Operations {
      */
     public deleteFiles(filter: string, filePath: string): void {
         const result = this.filterFiles(filter, filePath);
-        result.forEach(fileName => {
-            const fullPath = path.join(filePath, fileName);
-            this.deleteFile(fullPath);
-        });
+        if(result.length === 0) {
+            this._logger.warn(`[Delete IGNORED] No files found with '${filter}' for '${path}'`);
+        } else {
+            result.forEach(fileName => {
+                const fullPath = path.join(filePath, fileName);
+                this.deleteFile(fullPath);
+            });
+        }
     }
 
     public createFile(destination: string, contents: Buffer): void {
@@ -138,7 +150,7 @@ export class Operations {
             let wasChanged: boolean = false;
             if (isRegularExpression === false) {
                 let iPos = contents.indexOf(search);
-                while (iPos > 0) {
+                while (iPos > -1) {
                     this._logger.info(`[ReplaceText] '${search}' with '${replace}'`);
                     contents = contents.replace(search, replace);
                     wasChanged = true;
@@ -155,6 +167,8 @@ export class Operations {
 
             if (wasChanged) {
                 io.writeFileSync(file, contents, "utf8");
+            } else {
+                this._logger.warn(`[ReplaceText IGNORED] ReplaceText in '${file}': '${search}' to '${replace}' no match was found`);
             }
 
         } else {
@@ -206,7 +220,7 @@ export class Operations {
      */
     public createDirectory(directoryPath: string): void {
         if (io.existsSync(directoryPath)) {
-            this._logger.warn(`[CreateDirectory Ignored] '${directoryPath}'`);
+            this._logger.warn(`[CreateDirectory IGNORED] '${directoryPath}'`);
         } else {
             io.mkdirSync(directoryPath, 0o777);
             this._logger.info(`[CreateDirectory] '${directoryPath}'`);
@@ -222,7 +236,7 @@ export class Operations {
             io.removeSync(directoryPath);
             this._logger.info(`[Deleted] '${directoryPath}'`);
         } else {
-            this._logger.warn(`[Delete Ignored] '${directoryPath}'`);
+            this._logger.warn(`[Delete IGNORED] '${directoryPath}'`);
         }
     }
 

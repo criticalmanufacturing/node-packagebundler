@@ -32,7 +32,7 @@
                 "test/*.test.js",
                 "--no-timeouts"
             ],
-            "cwd": "${workspaceRoot}/generators/packagePacker",
+            "cwd": "${workspaceRoot}",
             "runtimeExecutable": null,
             "sourceMaps": true,
             "outputCapture": "std"
