@@ -89,7 +89,8 @@ export class PackagePacker {
             this._operations.copyDirectory(dist, temp);
         }
 
-        const main: string = io.readJSONSync(path.join(source, "package.json"))?.main;
+        const packageJson = io.readJSONSync(path.join(source, "package.json"));
+        const main: string = packageJson?.main;
         const mainSplitted: string[] = main?.split("/");
         const index = mainSplitted?.[mainSplitted.length - 1];
         mainSplitted?.pop();
@@ -122,7 +123,10 @@ export class PackagePacker {
                 path.join(source, pack.directory),
                 pack.source || "index.js",
                 temp,
-                pack.destination || "index.js");
+                pack.destination || "index.js",
+                {
+                    externals: configuration.ncc?.externals ?? Object.keys(packageJson.peerDependencies ?? {}).concat(Object.keys(packageJson.devDependencies ?? {})),
+                });
         }
 
         if (configuration.type !== ComponentType.TasksPackage) {
@@ -315,9 +319,9 @@ export class PackagePacker {
      * @param destinationDirectory Destination where to save the result
      * @param destinationFile Name of the final bundled file
      */
-    private async packPackage(SourceDirectory: string, sourceFile: string, destinationDirectory: string, destinationFile: string): Promise<void> {
+    private async packPackage(SourceDirectory: string, sourceFile: string, destinationDirectory: string, destinationFile: string, nccOpts: object): Promise<void> {
         const nccInput: string = path.join(SourceDirectory, sourceFile);
-        const nccOptions: any = { minify: false, sourceMap: false, sourceMapRegister: false, quiet: true };
+        const nccOptions: any = { minify: false, sourceMap: false, sourceMapRegister: false, quiet: true, ...nccOpts };
         const { code, assets } = await ncc(nccInput, nccOptions);
 
         for (const [assetName, assetCode] of Object.entries(assets)) {

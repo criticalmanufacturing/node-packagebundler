@@ -54,6 +54,10 @@ export interface Configuration {
     font?: string;
     /** List of actions to post perform */
     postActions?: Action[];
+    /** NCC options */
+    ncc?: {
+        externals?: string[];
+    };
 }
 
 /** Action structure */
