@@ -52,6 +52,8 @@ export interface Configuration {
     businessScenarios?: string;
     /** font to add into the metadata of the tasks library package */
     font?: string;
+    /** Treat post-action rules that do not match anything as warnings instead of errors */
+    treatMissingRulesAsWarning?: boolean;
     /** List of actions to post perform */
     postActions?: Action[];
 }

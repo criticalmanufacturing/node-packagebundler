@@ -210,6 +210,7 @@ export class PackagePacker {
         }
 
         // process Post actions
+        this._operations.setTreatMissingRulesAsWarning(configuration.treatMissingRulesAsWarning === true);
         (configuration.postActions || []).forEach((action: Action) => {
             const actionSource: string = (action.source || "")
                 .replace("${Source}", source)
@@ -236,6 +237,7 @@ export class PackagePacker {
                 case ActionType.ReplaceText: this._operations.replaceTextInFile(actionSource, action.search || "", action.replace || "", action.isRegularExpression || false); break;
             }
         });
+        this._operations.setTreatMissingRulesAsWarning(false);
 
         // Place index.js into src directory
         this._operations.createDirectory(path.join(temp, "src"));
