@@ -9,7 +9,9 @@ import { spawnSync } from "child_process";
 export class Operations {
     @inject(TYPES.Logger)
     private _logger: Log;
-    private _treatMissingRulesAsWarning: boolean = false;
+    // Operations also applies optional internal packaging tweaks; those should remain non-fatal.
+    // PackagePacker sets this to the configured policy only while running packConfig post actions.
+    private _treatMissingRulesAsWarning: boolean = true;
 
     public setTreatMissingRulesAsWarning(value: boolean): void {
         this._treatMissingRulesAsWarning = value;

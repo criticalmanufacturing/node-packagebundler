@@ -240,7 +240,7 @@ export class PackagePacker {
                 case ActionType.ReplaceText: this._operations.replaceTextInFile(actionSource, action.search || "", action.replace || "", action.isRegularExpression || false); break;
             }
         });
-        this._operations.setTreatMissingRulesAsWarning(false);
+        this._operations.setTreatMissingRulesAsWarning(true);
 
         // Place index.js into src directory
         this._operations.createDirectory(path.join(temp, "src"));

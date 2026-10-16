@@ -259,6 +259,7 @@ describe("Operations", () => {
         });
 
         it("should throw if no files match the filter by default", () => {
+            operations.setTreatMissingRulesAsWarning(false);
             readdirSyncStub.returns(["a.js", "b.css"]);
             statSyncStub.callsFake(() => ({ isFile: () => true }));
 
