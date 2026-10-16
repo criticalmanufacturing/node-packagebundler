@@ -28,9 +28,12 @@ The following parameters can be supplied:
 
 The configuration is a .json file that identifies the type of package and declare post-packing actions to perform to organize, clean and possibly, fix some issues with the result structure.
 
+If a post-action rule does not match its target (for example, a `CopyFiles` filter finds no files or a `ReplaceText` search string is absent), package bundling fails with an error by default. Set `treatMissingRulesAsWarning` to `true` in `packConfig.json` to log these cases as warnings and continue, preserving the previous behavior.
+
 ```json
 {
     "type": "<Package Type>",
+    "treatMissingRulesAsWarning": false,
     "postActions": [
         { "type": "<ActionType>", "parameter1": "value1", "parameter2": "value2", "...": "..." },
         { "type": "<ActionType>", "parameter1": "value1", "parameter2": "value2", "...": "..." }

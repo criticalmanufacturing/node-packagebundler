@@ -9,6 +9,21 @@ import { spawnSync } from "child_process";
 export class Operations {
     @inject(TYPES.Logger)
     private _logger: Log;
+    // Operations also applies optional internal packaging tweaks; those should remain non-fatal.
+    // PackagePacker sets this to the configured policy only while running packConfig post actions.
+    private _treatMissingRulesAsWarning: boolean = true;
+
+    public setTreatMissingRulesAsWarning(value: boolean): void {
+        this._treatMissingRulesAsWarning = value;
+    }
+
+    private reportMissingRule(message: string): void {
+        if (this._treatMissingRulesAsWarning) {
+            this._logger.warn(message);
+        } else {
+            throw new Error(message);
+        }
+    }
 
     /**
     * Copy one file from one place to another
@@ -42,7 +57,7 @@ export class Operations {
     public copyFiles(filter: string, source: string, destination: string, isOptional: boolean = false): void {
         const result = this.filterFiles(filter, source);
         if (result.length === 0) {
-            this._logger.warn(`[Copy IGNORED] No files found with '${filter}' for '${path}'`);
+            this.reportMissingRule(`[Copy IGNORED] No files found with '${filter}' in '${source}'`);
         } else {
             result.forEach(fileName => {
                 this.copyFile(fileName, source, destination, isOptional);
@@ -79,7 +94,7 @@ export class Operations {
     public moveFiles(filter: string, source: string, destination: string): void {
         const result = this.filterFiles(filter, source);
         if (result.length === 0) {
-            this._logger.warn(`[Move IGNORED] No files found with '${filter}' for '${path}'`);
+            this.reportMissingRule(`[Move IGNORED] No files found with '${filter}' in '${source}'`);
         } else {
             result.forEach(fileName => {
                 this.moveFile(fileName, source, destination);
@@ -110,7 +125,7 @@ export class Operations {
             io.unlinkSync(filePath);
             this._logger.info(`[Deleted] '${filePath}'`);
         } else {
-            this._logger.warn(`[Delete IGNORED] '${filePath}'`);
+            this.reportMissingRule(`[Delete IGNORED] '${filePath}'`);
         }
     }
 
@@ -121,8 +136,8 @@ export class Operations {
      */
     public deleteFiles(filter: string, filePath: string): void {
         const result = this.filterFiles(filter, filePath);
-        if(result.length === 0) {
-            this._logger.warn(`[Delete IGNORED] No files found with '${filter}' for '${path}'`);
+        if (result.length === 0) {
+            this.reportMissingRule(`[Delete IGNORED] No files found with '${filter}' in '${filePath}'`);
         } else {
             result.forEach(fileName => {
                 const fullPath = path.join(filePath, fileName);
@@ -168,11 +183,11 @@ export class Operations {
             if (wasChanged) {
                 io.writeFileSync(file, contents, "utf8");
             } else {
-                this._logger.warn(`[ReplaceText IGNORED] ReplaceText in '${file}': '${search}' to '${replace}' no match was found`);
+                this.reportMissingRule(`[ReplaceText IGNORED] ReplaceText in '${file}': '${search}' to '${replace}' no match was found`);
             }
 
         } else {
-            this._logger.warn(`[ReplaceText IGNORED] ReplaceText in '${file}' because it doesn't exist!!!`);
+            this.reportMissingRule(`[ReplaceText IGNORED] ReplaceText in '${file}' because it doesn't exist!!!`);
         }
     }
 

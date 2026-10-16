@@ -85,6 +85,7 @@ describe("Operations", () => {
         it("should warn and not write if search token is not found", () => {
             existsSyncStub.returns(true);
             readFileSyncStub.returns("Nothing to replace here");
+            operations.setTreatMissingRulesAsWarning(true);
 
             operations.replaceTextInFile(testFilePath, "Hello", "Hi", false);
 
@@ -96,6 +97,7 @@ describe("Operations", () => {
 
         it("should warn if file does not exist", () => {
             existsSyncStub.returns(false);
+            operations.setTreatMissingRulesAsWarning(true);
 
             operations.replaceTextInFile(testFilePath, "Hello", "Hi", false);
 
@@ -144,6 +146,7 @@ describe("Operations", () => {
         });
 
         it("should warn if no files match the filter", () => {
+            operations.setTreatMissingRulesAsWarning(true);
             readdirSyncStub.returns(["file1.js", "file2.css"]);
             statSyncStub.callsFake((filePath: string) => ({
                 isFile: () => true
@@ -153,7 +156,7 @@ describe("Operations", () => {
 
             expect(unlinkSyncStub.called).to.be.false;
             expect(logStub.warn.calledWith(
-                `[Delete IGNORED] No files found with '${filter}' for '${path}'`
+                `[Delete IGNORED] No files found with '${filter}' in '${testDir}'`
             )).to.be.true;
         });
     });
@@ -197,6 +200,7 @@ describe("Operations", () => {
         });
 
         it("should warn if no files match the filter", () => {
+            operations.setTreatMissingRulesAsWarning(true);
             readdirSyncStub.returns(["a.js", "b.css"]);
             statSyncStub.callsFake(filePath => ({ isFile: () => true }));
 
@@ -204,7 +208,7 @@ describe("Operations", () => {
 
             expect(copySyncStub.called).to.be.false;
             expect(unlinkSyncStub.called).to.be.false;
-            expect(logStub.warn.calledWith(`[Move IGNORED] No files found with '${filter}' for '${path}'`)).to.be.true;
+            expect(logStub.warn.calledWith(`[Move IGNORED] No files found with '${filter}' in '${testDir}'`)).to.be.true;
         });
     });
 
@@ -244,13 +248,24 @@ describe("Operations", () => {
         });
 
         it("should warn if no files match the filter", () => {
+            operations.setTreatMissingRulesAsWarning(true);
             readdirSyncStub.returns(["a.js", "b.css"]);
             statSyncStub.callsFake(filePath => ({ isFile: () => true }));
 
             operations.copyFiles(filter, testDir, destDir);
 
             expect(copySyncStub.called).to.be.false;
-            expect(logStub.warn.calledWith(`[Copy IGNORED] No files found with '${filter}' for '${path}'`)).to.be.true;
+            expect(logStub.warn.calledWith(`[Copy IGNORED] No files found with '${filter}' in '${testDir}'`)).to.be.true;
+        });
+
+        it("should throw if no files match the filter by default", () => {
+            operations.setTreatMissingRulesAsWarning(false);
+            readdirSyncStub.returns(["a.js", "b.css"]);
+            statSyncStub.callsFake(() => ({ isFile: () => true }));
+
+            expect(() => operations.copyFiles(filter, testDir, destDir)).to.throw(
+                `[Copy IGNORED] No files found with '${filter}' in '${testDir}'`
+            );
         });
     });
 });
