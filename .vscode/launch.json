@@ -15,9 +15,10 @@
             "args": [
                 "-a=https://dev.criticalmanufacturing.io/repository/http/ConnectIoT",
                 "-d",
-                "-o=."
+                "-o=.",
+                "--treatMissingRulesAsWarning"
             ],
-            "cwd": "C:/cmf/Product/111x/Product/Platform/ConnectIoT/src/driver-oib",
+            "cwd": "C:\\cmf\\Product\\120x\\Product\\Platform\\ConnectIoT\\src\\driver-fileraw",
             "outFiles": [],
             "outputCapture": "std"
         },

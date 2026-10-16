@@ -17,6 +17,7 @@ async function main() {
     yargs.option("a", { alias: "addons", type: "string", default: "", description: "Location of the compiled addons", required: false });
     yargs.option("d", { alias: "debug", type: "boolean", default: false, description: "Debug Mode (doesn't delete temporary directory after processing)", required: false });
     yargs.option("v", { alias: "version", type: "string", default: "", description: "Version to use to generate the package", required: false });
+    yargs.option("treatMissingRulesAsWarning", { type: "boolean", description: "Log unmatched post-action rules as warnings instead of failing", required: false });
 
     yargs.help("h").alias("h", "help");
 

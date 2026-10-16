@@ -210,7 +210,10 @@ export class PackagePacker {
         }
 
         // process Post actions
-        this._operations.setTreatMissingRulesAsWarning(configuration.treatMissingRulesAsWarning === true);
+        const treatMissingRulesAsWarning: boolean = typeof options.treatMissingRulesAsWarning === "boolean"
+            ? options.treatMissingRulesAsWarning
+            : configuration.treatMissingRulesAsWarning === true;
+        this._operations.setTreatMissingRulesAsWarning(treatMissingRulesAsWarning);
         (configuration.postActions || []).forEach((action: Action) => {
             const actionSource: string = (action.source || "")
                 .replace("${Source}", source)
