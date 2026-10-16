@@ -240,6 +240,7 @@ export class PackagePacker {
                 case ActionType.ReplaceText: this._operations.replaceTextInFile(actionSource, action.search || "", action.replace || "", action.isRegularExpression || false); break;
             }
         });
+        // This is needed because some internal rules that are applied after this line might not have matches and we don't want these rules to fail
         this._operations.setTreatMissingRulesAsWarning(true);
 
         // Place index.js into src directory
