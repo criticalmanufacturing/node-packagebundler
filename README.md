@@ -64,7 +64,7 @@ This example uses paths from an existing Connect IoT monitor package. Entries ca
 }
 ```
 
-At present, the bundler validates only the structure of this section. It does not compare these entries with the contents of the generated `.tgz`.
+When `packageValidation` is present, the bundler runs `npm pack --json` and compares the files in npm's final package manifest with these lists, including files npm adds automatically. Every packaged file must match `allowedFiles`, and every `requiredFiles` entry must match at least one packaged file. A required file must also be allowed. Paths are relative to the package root; exact paths and glob patterns such as `opentelemetry/**` are supported. Matching is case-sensitive on Windows and Linux. Unexpected files and missing required files are reported separately as errors. Validation also runs when `-o` is omitted; in that case, the generated archive is deleted after validation. Without `packageValidation`, packaging behavior is unchanged.
 
 Possible Package Types:
 

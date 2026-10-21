@@ -305,6 +305,24 @@ export class Operations {
         return (true);
     }
 
+    /** Run a command whose stdout is structured data. */
+    public runAndCapture(command: string, args: string[], cwd?: string): string {
+        this._logger.info(`[Run] ${cwd != null ? cwd + "> " : ""}${command} ${args.join(" ")}`);
+        const child = spawnSync(command, args, { cwd, shell: true, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+
+        if (child.error != null) {
+            throw child.error;
+        }
+        if (child.stderr) {
+            this._logger.warn(`[Run Err] ${child.stderr.trim()}`);
+        }
+        if (child.status !== 0) {
+            throw new Error(`[Run FAIL] Failed to execute command '${command}'. ExitCode='${child.status}'`);
+        }
+
+        return child.stdout;
+    }
+
     /**
      * Utility function to convert ReadableStream<Uint8Array> to Buffer
      * @param readableStream ReadableStream to convert

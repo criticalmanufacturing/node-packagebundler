@@ -17,6 +17,7 @@ import { LibraryFontProcessor } from "./processors/libraryFont";
 import { BusinessScenariosProcessor } from "./processors/businessScenarios";
 import { Operations } from "./processors/operations";
 import { validatePackageValidationConfiguration } from "./packageValidationConfiguration";
+import { packAndValidate } from "./packageValidation";
 
 export class PackagePacker {
     private _logger: Log;
@@ -262,7 +263,9 @@ export class PackagePacker {
         }
 
         // Create Package and place it in the destination
-        if (destination !== "") {
+        if (configuration.packageValidation !== undefined) {
+            packAndValidate(this._operations, temp, destination, configuration.packageValidation);
+        } else if (destination !== "") {
             this._operations.createDirectory(destination);
 
             if (os.platform() === "win32") {
