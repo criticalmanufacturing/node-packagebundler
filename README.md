@@ -41,6 +41,31 @@ If a post-action rule does not match its target (for example, a `CopyFiles` filt
 }
 ```
 
+`packageValidation` is optional. Existing `packConfig.json` files do not need to add it. When it is present, `allowedFiles` must be a nonempty array of nonempty strings; `requiredFiles`, if present, must be an array of nonempty strings. Invalid values stop the bundler before it prepares the package.
+
+This example uses paths from an existing Connect IoT monitor package. Entries can be exact archive-relative paths or patterns such as `opentelemetry/**`:
+
+```json
+{
+    "type": "Component",
+    "packageValidation": {
+        "allowedFiles": [
+            "package.json",
+            "README.md",
+            "npm-shrinkwrap.json",
+            "src/index.js",
+            "opentelemetry/**"
+        ],
+        "requiredFiles": [
+            "package.json",
+            "src/index.js"
+        ]
+    }
+}
+```
+
+At present, the bundler validates only the structure of this section. It does not compare these entries with the contents of the generated `.tgz`.
+
 Possible Package Types:
 
 | Type           | Description                                                  |
