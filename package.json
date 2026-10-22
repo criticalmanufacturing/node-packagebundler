@@ -51,6 +51,7 @@
         "@vercel/ncc": "0.38.3",
         "fs-extra": "11.2.0",
         "inversify": "6.2.1",
+        "minimatch": "9.0.5",
         "reflect-metadata": "0.2.2",
         "yargs": "17.7.2",
         "unzipper": "0.12.3"

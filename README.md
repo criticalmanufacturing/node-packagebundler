@@ -41,6 +41,31 @@ If a post-action rule does not match its target (for example, a `CopyFiles` filt
 }
 ```
 
+`packageValidation` is optional. Existing `packConfig.json` files do not need to add it. When it is present, `allowedFiles` must be a nonempty array of nonempty strings; `requiredFiles`, if present, must be an array of nonempty strings. Invalid values stop the bundler before it prepares the package.
+
+This example uses paths from an existing Connect IoT monitor package. Entries can be exact archive-relative paths or patterns such as `opentelemetry/**`:
+
+```json
+{
+    "type": "Component",
+    "packageValidation": {
+        "allowedFiles": [
+            "package.json",
+            "README.md",
+            "npm-shrinkwrap.json",
+            "src/index.js",
+            "opentelemetry/**"
+        ],
+        "requiredFiles": [
+            "package.json",
+            "src/index.js"
+        ]
+    }
+}
+```
+
+When `packageValidation` is present, the bundler runs `npm pack --json` and compares the files in npm's final package manifest with these lists, including files npm adds automatically. Every packaged file must match `allowedFiles`, and every `requiredFiles` entry must match at least one packaged file. A required file must also be allowed. Paths are relative to the package root; exact paths and glob patterns such as `opentelemetry/**` are supported. Matching is case-sensitive on Windows and Linux. Unexpected files and missing required files are reported separately as errors. Validation also runs when `-o` is omitted; in that case, the generated archive is deleted after validation. Without `packageValidation`, packaging behavior is unchanged.
+
 Possible Package Types:
 
 | Type           | Description                                                  |

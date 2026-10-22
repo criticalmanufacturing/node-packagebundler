@@ -54,8 +54,18 @@ export interface Configuration {
     font?: string;
     /** Treat post-action rules that do not match anything as warnings instead of errors */
     treatMissingRulesAsWarning?: boolean;
+    /** Optional declaration of expected files in the final package */
+    packageValidation?: PackageValidation;
     /** List of actions to post perform */
     postActions?: Action[];
+}
+
+/** Optional final-package file declaration */
+export interface PackageValidation {
+    /** Allowed archive-relative file paths or glob patterns */
+    allowedFiles: string[];
+    /** Required archive-relative file paths or glob patterns */
+    requiredFiles?: string[];
 }
 
 /** Action structure */

@@ -16,6 +16,8 @@ import { ShrinkwrapGenerator } from "./processors/shrinkwrapGenerator";
 import { LibraryFontProcessor } from "./processors/libraryFont";
 import { BusinessScenariosProcessor } from "./processors/businessScenarios";
 import { Operations } from "./processors/operations";
+import { validatePackageValidationConfiguration } from "./packageValidationConfiguration";
+import { packAndValidate } from "./packageValidation";
 
 export class PackagePacker {
     private _logger: Log;
@@ -62,6 +64,7 @@ export class PackagePacker {
         }
 
         const configuration: Configuration = JSON.parse(io.readFileSync(configurationFile, "utf8"));
+        validatePackageValidationConfiguration(configuration.packageValidation);
 
         // Only process addons if there are addons to process and if there is an arg for addons
         if (configuration.addons != null && addons != null && addons !== "") {
@@ -260,7 +263,9 @@ export class PackagePacker {
         }
 
         // Create Package and place it in the destination
-        if (destination !== "") {
+        if (configuration.packageValidation !== undefined) {
+            packAndValidate(this._operations, temp, destination, configuration.packageValidation);
+        } else if (destination !== "") {
             this._operations.createDirectory(destination);
 
             if (os.platform() === "win32") {
