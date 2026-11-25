@@ -82,7 +82,7 @@ export class PackagePacker {
         this._operations.deleteDirectory(temp);
         this._operations.createDirectory(temp);
         if (configuration.type === ComponentType.TasksPackage) {
-            const dist = io.readJSONSync(path.join(source, "ng-package.json")).dest;
+            const dist = this.resolveTasksPackageOutput(source);
 
             if (!io.existsSync(dist)) {
                 console.error("\x1b[31m", `'${dist}' doesn't exist! Did you forget to run 'ng build'?`, "\x1b[0m");
@@ -288,6 +288,58 @@ export class PackagePacker {
 
         this._logger.info("");
         this._logger.success("** Finished **");
+    }
+
+    private resolveTasksPackageOutput(source: string): string {
+        const packageRoot = path.resolve(source);
+        const legacyConfigPath = path.join(packageRoot, "ng-package.json");
+        if (io.existsSync(legacyConfigPath)) {
+            const { dest = "dist" } = io.readJSONSync(legacyConfigPath);
+            return path.resolve(packageRoot, dest);
+        }
+
+        let workspaceRoot = packageRoot;
+        while (!io.existsSync(path.join(workspaceRoot, "angular.json"))) {
+            const parent = path.dirname(workspaceRoot);
+            if (parent === workspaceRoot) {
+                throw new Error("Could not find ng-package.json or an Angular workspace (angular.json) for " + packageRoot);
+            }
+            workspaceRoot = parent;
+        }
+
+        const workspace = io.readJSONSync(path.join(workspaceRoot, "angular.json"));
+        type LibraryBuild = {
+            builder?: string;
+            defaultConfiguration?: string;
+            options?: { outputPath?: string };
+            configurations?: Record<string, { outputPath?: string }>;
+        };
+        const projects: Record<string, {
+            projectType?: string;
+            root?: string;
+            architect?: { build?: LibraryBuild };
+            targets?: { build?: LibraryBuild };
+        }> = workspace.projects ?? {};
+        const libraries = Object.entries(projects).filter(([, project]) =>
+            project.projectType === "library" &&
+            typeof project.root === "string" &&
+            path.relative(packageRoot, path.resolve(workspaceRoot, project.root)) === "");
+
+        if (libraries.length !== 1) {
+            throw new Error("Expected one Angular library project rooted at " + packageRoot);
+        }
+
+        const [name, project] = libraries[0];
+        const build = project.architect?.build ?? project.targets?.build;
+        if (build?.builder !== "@angular/build:library") {
+            throw new Error("Expected an @angular/build:library build target for Angular project " + name);
+        }
+
+        // IoT Tasks Packages build with the development configuration.
+        const configuration = build.configurations?.development ??
+            build.configurations?.[build.defaultConfiguration ?? ""];
+        const outputPath = configuration?.outputPath ?? build.options?.outputPath ?? path.join("dist", name);
+        return path.resolve(workspaceRoot, outputPath);
     }
 
     /**
